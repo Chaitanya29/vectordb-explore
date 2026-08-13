@@ -89,3 +89,13 @@ client = chromadb.PersistentClient(path="/path/to/store")
 collection = client.get_collection("documents")  # loads from disk if present
 results = collection.query(query_texts=["..."], n_results=3)
 ```
+
+## HTTP/REST Client (Server Mode)
+
+- **Server-backed mode:** Chromadb can run as an HTTP/REST server that other processes connect to. This is useful when you need a single, long-lived server that multiple scripts or services can query and update.
+- **How it helps:** Unlike the in-memory client, the server exposes collections over HTTP so separate processes (or machines) can access the same data concurrently. The server can be configured to use persistent storage on disk so data survives restarts.
+- **Starting the server:** Use the `chroma` CLI to run a server pointing at a directory for the HTTP backend. Example:
+
+```powershell
+chroma run --path /data/http
+```
