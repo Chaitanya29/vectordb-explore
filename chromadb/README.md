@@ -71,3 +71,21 @@ ChromaDB makes working with embeddings and semantic search accessible to beginne
 - **Ephemeral storage:** The default `chromadb.Client()` used in the examples is an in-memory client. Collections and documents exist only in the running Python process. When the script or process exits, that in-memory data is discarded and cannot be read by a new process.
 - **Reading within the same process:** While a process is running you can read collections using the same `client` instance (for example via `client.get_collection(name)`, `collection.peek()`, or `collection.query(...)`). Separate scripts (separate processes) do not share the in-memory state.
 - **Common pitfall:** Running `create_collection.py` and then running a separate script like `read_collection.py` will not show the previously added documents unless both run inside the same process or you recreate the collection/data in the new run.
+
+## Persistent Client Behavior
+
+- **Durable storage:** A persistent ChromaDB client stores data on disk (or another configured backend). Collections and documents persist across process restarts, so a separate script can read data added by a previous run.
+- **How it overcomes the in-memory issue:** Instead of keeping data only in memory, the persistent client writes collection state to a persistence directory or configured store. When a new `chromadb.PersistentClient(path="/path/to/store")` is created pointing at the same persistence location, it loads existing collections and documents, avoiding the ephemeral-data problem.
+
+- **Example pattern:**
+
+```python
+import chromadb
+
+# Create a persistent client that stores data on disk
+client = chromadb.PersistentClient(path="/path/to/store")
+
+# Open or create a collection persisted at that path
+collection = client.get_collection("documents")  # loads from disk if present
+results = collection.query(query_texts=["..."], n_results=3)
+```
