@@ -65,3 +65,9 @@ print(results)
 ## Summary
 
 ChromaDB makes working with embeddings and semantic search accessible to beginners. It abstracts away complexity while providing powerful search capabilities, making it ideal for building AI-powered applications without requiring deep database expertise.
+
+## In-Memory Client Behavior
+
+- **Ephemeral storage:** The default `chromadb.Client()` used in the examples is an in-memory client. Collections and documents exist only in the running Python process. When the script or process exits, that in-memory data is discarded and cannot be read by a new process.
+- **Reading within the same process:** While a process is running you can read collections using the same `client` instance (for example via `client.get_collection(name)`, `collection.peek()`, or `collection.query(...)`). Separate scripts (separate processes) do not share the in-memory state.
+- **Common pitfall:** Running `create_collection.py` and then running a separate script like `read_collection.py` will not show the previously added documents unless both run inside the same process or you recreate the collection/data in the new run.
